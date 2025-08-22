@@ -11,6 +11,11 @@ export default function NewCategoryPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!name.trim()) {
+      setError('กรุณากรอกชื่อหมวดหมู่')
+      return
+    }
+
     setLoading(true)
     setError(null)
 
@@ -20,7 +25,7 @@ export default function NewCategoryPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name: name.trim() }),
       })
 
       if (!res.ok) {
@@ -28,6 +33,8 @@ export default function NewCategoryPage() {
         throw new Error(data.error || 'เกิดข้อผิดพลาดในการเพิ่มหมวดหมู่')
       }
 
+      // กรณีไม่ redirect ทันทีให้รีเซ็ตฟอร์ม
+      // setName('')
       router.push('/products') // กลับไปหน้ารายการสินค้า
     } catch (err: any) {
       setError(err.message)
@@ -40,7 +47,7 @@ export default function NewCategoryPage() {
     <div className="max-w-md mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">เพิ่มหมวดหมู่ใหม่</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <div>
           <label htmlFor="name" className="block mb-1 font-medium">
             ชื่อหมวดหมู่
@@ -53,10 +60,15 @@ export default function NewCategoryPage() {
             required
             placeholder="กรอกชื่อหมวดหมู่ เช่น เสื้อผ้า"
             className="w-full border rounded px-3 py-2"
+            aria-describedby="name-error"
           />
         </div>
 
-        {error && <p className="text-red-600">{error}</p>}
+        {error && (
+          <p id="name-error" className="text-red-600" role="alert" aria-live="assertive">
+            {error}
+          </p>
+        )}
 
         <div className="flex items-center gap-4">
           <button

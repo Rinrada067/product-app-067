@@ -55,25 +55,64 @@ function NewProductPage() {
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
     const [submitting, setSubmitting] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const [errors, setErrors] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({});
-    // ดึงหมวดหมู่จากฐานข้อมูลจริง
+    const [newCategoryName, setNewCategoryName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
+    const [addingCategory, setAddingCategory] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        const fetchCategories = async ()=>{
-            try {
-                setLoading(true);
-                const res = await fetch('/api/categories') // เรียก API ของเรา
-                ;
-                if (!res.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้');
-                const data = await res.json();
-                setCategories(data);
-            } catch (error) {
-                console.error(error);
-                setCategories([]);
-            } finally{
-                setLoading(false);
-            }
-        };
         fetchCategories();
     }, []);
+    const fetchCategories = async ()=>{
+        try {
+            setLoading(true);
+            const res = await fetch('/api/categories');
+            if (!res.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้');
+            const data = await res.json();
+            setCategories(data);
+        } catch (error) {
+            console.error(error);
+            setCategories([]);
+        } finally{
+            setLoading(false);
+        }
+    };
+    const handleAddCategoryFromInput = async ()=>{
+        if (!newCategoryName.trim()) {
+            alert('กรุณากรอกชื่อหมวดหมู่');
+            return;
+        }
+        setAddingCategory(true);
+        try {
+            const res = await fetch('/api/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: newCategoryName.trim()
+                })
+            });
+            if (!res.ok) {
+                alert('เกิดข้อผิดพลาดในการเพิ่มหมวดหมู่');
+                setAddingCategory(false);
+                return;
+            }
+            const createdCategory = await res.json();
+            setCategories((prev)=>[
+                    ...prev,
+                    createdCategory
+                ]);
+            setCategoryId(createdCategory.c_id);
+            setNewCategoryName('');
+            setErrors((prev)=>({
+                    ...prev,
+                    category: ''
+                }));
+        } catch (error) {
+            alert('เกิดข้อผิดพลาดในการเพิ่มหมวดหมู่');
+            console.error(error);
+        } finally{
+            setAddingCategory(false);
+        }
+    };
     const validateForm = ()=>{
         const newErrors = {};
         if (!name.trim()) newErrors.name = 'กรุณากรอกชื่อสินค้า';
@@ -108,6 +147,7 @@ function NewProductPage() {
                 setDescription('');
                 setPrice('');
                 setCategoryId(0);
+                setNewCategoryName('');
                 setErrors({});
                 router.push('/products');
             } else {
@@ -144,55 +184,48 @@ function NewProductPage() {
                 description: ''
             }));
     };
-    const handleCategoryChange = (e)=>{
-        setCategoryId(parseInt(e.target.value));
-        if (errors.category) setErrors((prev)=>({
-                ...prev,
-                category: ''
-            }));
-    };
     if (loading) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-            className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6",
+            className: "min-h-screen bg-gradient-to-br from-orange-100 via-red-100 to-pink-100 p-6",
             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "max-w-2xl mx-auto",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "flex items-center justify-center h-64",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"
+                            className: "animate-spin rounded-full h-16 w-16 border-b-4 border-red-500"
                         }, void 0, false, {
                             fileName: "[project]/app/products/new/page.tsx",
-                            lineNumber: 118,
+                            lineNumber: 151,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                            className: "ml-4 text-lg text-gray-600",
+                            className: "ml-4 text-lg text-red-700 font-semibold",
                             children: "กำลังโหลดข้อมูล..."
                         }, void 0, false, {
                             fileName: "[project]/app/products/new/page.tsx",
-                            lineNumber: 119,
+                            lineNumber: 152,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/products/new/page.tsx",
-                    lineNumber: 117,
+                    lineNumber: 150,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/products/new/page.tsx",
-                lineNumber: 116,
+                lineNumber: 149,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/products/new/page.tsx",
-            lineNumber: 115,
+            lineNumber: 148,
             columnNumber: 7
         }, this);
     }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100",
+        className: "min-h-screen bg-gradient-to-br from-orange-100 via-red-100 to-pink-100",
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             className: "max-w-2xl mx-auto p-6",
             children: [
@@ -204,57 +237,57 @@ function NewProductPage() {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     onClick: ()=>window.history.back(),
-                                    className: "text-blue-600 hover:text-blue-700 text-2xl",
+                                    className: "text-red-700 hover:text-red-900 text-2xl font-bold",
                                     title: "กลับ",
                                     children: "←"
                                 }, void 0, false, {
                                     fileName: "[project]/app/products/new/page.tsx",
-                                    lineNumber: 132,
+                                    lineNumber: 165,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                                    className: "text-4xl font-bold text-gray-800 flex items-center gap-3",
+                                    className: "text-4xl font-extrabold text-red-900 flex items-center gap-3",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                            className: "text-blue-600 text-4xl",
+                                            className: "text-orange-600 text-4xl",
                                             children: "➕"
                                         }, void 0, false, {
                                             fileName: "[project]/app/products/new/page.tsx",
-                                            lineNumber: 140,
+                                            lineNumber: 173,
                                             columnNumber: 15
                                         }, this),
                                         "เพิ่มสินค้าใหม่"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/products/new/page.tsx",
-                                    lineNumber: 139,
+                                    lineNumber: 172,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/products/new/page.tsx",
-                            lineNumber: 131,
+                            lineNumber: 164,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "text-gray-600",
+                            className: "text-red-800 font-medium",
                             children: "กรอกข้อมูลสินค้าที่ต้องการเพิ่มเข้าสู่ระบบ"
                         }, void 0, false, {
                             fileName: "[project]/app/products/new/page.tsx",
-                            lineNumber: 144,
+                            lineNumber: 177,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/products/new/page.tsx",
-                    lineNumber: 130,
+                    lineNumber: 163,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "bg-white rounded-xl shadow-lg overflow-hidden",
+                    className: "bg-white rounded-xl shadow-xl overflow-hidden",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4",
+                            className: "bg-gradient-to-r from-red-500 to-orange-600 px-6 py-4",
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
                                 className: "text-white text-xl font-semibold flex items-center gap-2",
                                 children: [
@@ -262,19 +295,19 @@ function NewProductPage() {
                                         children: "📝"
                                     }, void 0, false, {
                                         fileName: "[project]/app/products/new/page.tsx",
-                                        lineNumber: 151,
+                                        lineNumber: 184,
                                         columnNumber: 15
                                     }, this),
                                     "ข้อมูลสินค้า"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/products/new/page.tsx",
-                                lineNumber: 150,
+                                lineNumber: 183,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/products/new/page.tsx",
-                            lineNumber: 149,
+                            lineNumber: 182,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -284,13 +317,13 @@ function NewProductPage() {
                                     className: "space-y-2",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                            className: "block text-sm font-semibold text-gray-700 flex items-center gap-2",
+                                            className: "block text-sm font-semibold text-red-800 flex items-center gap-2",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     children: "🏷️"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 160,
+                                                    lineNumber: 193,
                                                     columnNumber: 17
                                                 }, this),
                                                 "ชื่อสินค้า",
@@ -299,13 +332,13 @@ function NewProductPage() {
                                                     children: "*"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 162,
+                                                    lineNumber: 195,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/products/new/page.tsx",
-                                            lineNumber: 159,
+                                            lineNumber: 192,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -313,11 +346,11 @@ function NewProductPage() {
                                             placeholder: "ระบุชื่อสินค้า (เช่น สมาร์ทโฟน iPhone 15)",
                                             value: name,
                                             onChange: handleNameChange,
-                                            className: `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-500 focus:border-blue-500'}`,
+                                            className: `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-4 transition-colors shadow-sm ${errors.name ? 'border-red-400 focus:ring-red-500 focus:border-red-500' : 'border-orange-300 focus:ring-orange-400 focus:border-red-500'}`,
                                             required: true
                                         }, void 0, false, {
                                             fileName: "[project]/app/products/new/page.tsx",
-                                            lineNumber: 164,
+                                            lineNumber: 197,
                                             columnNumber: 15
                                         }, this),
                                         errors.name && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -327,33 +360,33 @@ function NewProductPage() {
                                                     children: "⚠️"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 178,
+                                                    lineNumber: 211,
                                                     columnNumber: 19
                                                 }, this),
                                                 errors.name
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/products/new/page.tsx",
-                                            lineNumber: 177,
+                                            lineNumber: 210,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/products/new/page.tsx",
-                                    lineNumber: 158,
+                                    lineNumber: 191,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "space-y-2",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                            className: "block text-sm font-semibold text-gray-700 flex items-center gap-2",
+                                            className: "block text-sm font-semibold text-red-800 flex items-center gap-2",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     children: "📄"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 187,
+                                                    lineNumber: 220,
                                                     columnNumber: 17
                                                 }, this),
                                                 "รายละเอียดสินค้า",
@@ -362,146 +395,8 @@ function NewProductPage() {
                                                     children: "*"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 189,
+                                                    lineNumber: 222,
                                                     columnNumber: 17
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/app/products/new/page.tsx",
-                                            lineNumber: 186,
-                                            columnNumber: 15
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
-                                            placeholder: "อธิบายรายละเอียดสินค้า คุณสมบัติ และข้อมูลที่สำคัญ",
-                                            value: description,
-                                            onChange: handleDescriptionChange,
-                                            rows: 4,
-                                            className: `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 resize-none transition-colors ${errors.description ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-500 focus:border-blue-500'}`,
-                                            required: true
-                                        }, void 0, false, {
-                                            fileName: "[project]/app/products/new/page.tsx",
-                                            lineNumber: 191,
-                                            columnNumber: 15
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex justify-between items-center",
-                                            children: [
-                                                errors.description && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-red-500 text-sm flex items-center gap-1",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            children: "⚠️"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 206,
-                                                            columnNumber: 21
-                                                        }, this),
-                                                        errors.description
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 205,
-                                                    columnNumber: 19
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-gray-500 text-sm ml-auto",
-                                                    children: [
-                                                        description.length,
-                                                        " ตัวอักษร"
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 210,
-                                                    columnNumber: 17
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/app/products/new/page.tsx",
-                                            lineNumber: 203,
-                                            columnNumber: 15
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/app/products/new/page.tsx",
-                                    lineNumber: 185,
-                                    columnNumber: 13
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "grid grid-cols-1 md:grid-cols-2 gap-6",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "space-y-2",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    className: "block text-sm font-semibold text-gray-700 flex items-center gap-2",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            children: "💰"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 221,
-                                                            columnNumber: 19
-                                                        }, this),
-                                                        "ราคาสินค้า (บาท)",
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "text-red-500",
-                                                            children: "*"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 223,
-                                                            columnNumber: 19
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 220,
-                                                    columnNumber: 17
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "relative",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                            type: "text",
-                                                            placeholder: "0.00",
-                                                            value: price,
-                                                            onChange: handlePriceChange,
-                                                            className: `w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.price ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-500 focus:border-blue-500'}`,
-                                                            required: true
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 226,
-                                                            columnNumber: 19
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm",
-                                                            children: "บาท"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 238,
-                                                            columnNumber: 19
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 225,
-                                                    columnNumber: 17
-                                                }, this),
-                                                errors.price && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-red-500 text-sm flex items-center gap-1",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            children: "⚠️"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 244,
-                                                            columnNumber: 21
-                                                        }, this),
-                                                        errors.price
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 243,
-                                                    columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
@@ -509,250 +404,245 @@ function NewProductPage() {
                                             lineNumber: 219,
                                             columnNumber: 15
                                         }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
+                                            placeholder: "อธิบายรายละเอียดสินค้า คุณสมบัติ และข้อมูลที่สำคัญ",
+                                            value: description,
+                                            onChange: handleDescriptionChange,
+                                            rows: 4,
+                                            className: `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-4 resize-none transition-colors shadow-sm ${errors.description ? 'border-red-400 focus:ring-red-500 focus:border-red-500' : 'border-orange-300 focus:ring-orange-400 focus:border-red-500'}`,
+                                            required: true
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/products/new/page.tsx",
+                                            lineNumber: 224,
+                                            columnNumber: 15
+                                        }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "space-y-2",
+                                            className: "flex justify-between items-center",
+                                            children: errors.description && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "text-red-500 text-sm flex items-center gap-1",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        children: "⚠️"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/products/new/page.tsx",
+                                                        lineNumber: 239,
+                                                        columnNumber: 21
+                                                    }, this),
+                                                    errors.description
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/products/new/page.tsx",
+                                                lineNumber: 238,
+                                                columnNumber: 19
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/products/new/page.tsx",
+                                            lineNumber: 236,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/products/new/page.tsx",
+                                    lineNumber: 218,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "space-y-2",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                            className: "block text-sm font-semibold text-red-800 flex items-center gap-2",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    className: "block text-sm font-semibold text-gray-700 flex items-center gap-2",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            children: "📂"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 253,
-                                                            columnNumber: 19
-                                                        }, this),
-                                                        "หมวดหมู่สินค้า",
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "text-red-500",
-                                                            children: "*"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 255,
-                                                            columnNumber: 19
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    children: "💰"
+                                                }, void 0, false, {
                                                     fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 252,
+                                                    lineNumber: 249,
                                                     columnNumber: 17
                                                 }, this),
+                                                "ราคา",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "text-red-500",
+                                                    children: "*"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/products/new/page.tsx",
+                                                    lineNumber: 251,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/products/new/page.tsx",
+                                            lineNumber: 248,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "text",
+                                            placeholder: "กรอกจำนวนเงิน",
+                                            value: price,
+                                            onChange: handlePriceChange,
+                                            className: `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-4 transition-colors shadow-sm ${errors.price ? 'border-red-400 focus:ring-red-500 focus:border-red-500' : 'border-orange-300 focus:ring-orange-400 focus:border-red-500'}`,
+                                            required: true
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/products/new/page.tsx",
+                                            lineNumber: 253,
+                                            columnNumber: 15
+                                        }, this),
+                                        errors.price && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            className: "text-red-500 text-sm flex items-center gap-1",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    children: "⚠️"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/products/new/page.tsx",
+                                                    lineNumber: 267,
+                                                    columnNumber: 19
+                                                }, this),
+                                                errors.price
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/products/new/page.tsx",
+                                            lineNumber: 266,
+                                            columnNumber: 17
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/products/new/page.tsx",
+                                    lineNumber: 247,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "space-y-2",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                            className: "block text-sm font-semibold text-red-800 flex items-center gap-2",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    children: "📚"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/products/new/page.tsx",
+                                                    lineNumber: 276,
+                                                    columnNumber: 17
+                                                }, this),
+                                                "หมวดหมู่สินค้า",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "text-red-500",
+                                                    children: "*"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/products/new/page.tsx",
+                                                    lineNumber: 278,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/products/new/page.tsx",
+                                            lineNumber: 275,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-center gap-2",
+                                            children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
                                                     value: categoryId,
-                                                    onChange: handleCategoryChange,
-                                                    className: `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 bg-white transition-colors ${errors.category ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-blue-500 focus:border-blue-500'}`,
-                                                    required: true,
+                                                    onChange: (e)=>setCategoryId(parseInt(e.target.value)),
+                                                    className: `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-4 transition-colors shadow-sm ${errors.category ? 'border-red-400 focus:ring-red-500 focus:border-red-500' : 'border-orange-300 focus:ring-orange-400 focus:border-red-500'}`,
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                             value: 0,
-                                                            disabled: true,
-                                                            children: "เลือกหมวดหมู่สินค้า"
+                                                            children: "เลือกหมวดหมู่..."
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 267,
+                                                            lineNumber: 290,
                                                             columnNumber: 19
                                                         }, this),
-                                                        categories.map((cat)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                value: cat.id,
-                                                                children: cat.name
-                                                            }, cat.id, false, {
+                                                        categories.map((category)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                value: category.c_id,
+                                                                children: category.name
+                                                            }, category.c_id, false, {
                                                                 fileName: "[project]/app/products/new/page.tsx",
-                                                                lineNumber: 269,
+                                                                lineNumber: 292,
                                                                 columnNumber: 21
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 257,
+                                                    lineNumber: 281,
                                                     columnNumber: 17
                                                 }, this),
-                                                errors.category && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-red-500 text-sm flex items-center gap-1",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            children: "⚠️"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 276,
-                                                            columnNumber: 21
-                                                        }, this),
-                                                        errors.category
-                                                    ]
-                                                }, void 0, true, {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    onClick: ()=>setAddingCategory(true),
+                                                    className: "text-blue-600 hover:text-blue-800 text-sm",
+                                                    children: "เพิ่มหมวดหมู่"
+                                                }, void 0, false, {
                                                     fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 275,
-                                                    columnNumber: 19
+                                                    lineNumber: 297,
+                                                    columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/products/new/page.tsx",
-                                            lineNumber: 251,
+                                            lineNumber: 280,
                                             columnNumber: 15
+                                        }, this),
+                                        errors.category && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            className: "text-red-500 text-sm flex items-center gap-1",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    children: "⚠️"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/products/new/page.tsx",
+                                                    lineNumber: 306,
+                                                    columnNumber: 19
+                                                }, this),
+                                                errors.category
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/products/new/page.tsx",
+                                            lineNumber: 305,
+                                            columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/products/new/page.tsx",
-                                    lineNumber: 217,
+                                    lineNumber: 274,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "border-t pt-6",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex flex-col sm:flex-row gap-4 items-center",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    type: "button",
-                                                    onClick: handleSubmit,
-                                                    disabled: submitting,
-                                                    className: `w-full sm:w-auto px-8 py-3 rounded-lg font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2 ${submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 shadow-lg hover:shadow-xl'}`,
-                                                    children: submitting ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "animate-spin rounded-full h-5 w-5 border-b-2 border-white"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/products/new/page.tsx",
-                                                                lineNumber: 298,
-                                                                columnNumber: 23
-                                                            }, this),
-                                                            "กำลังเพิ่มสินค้า..."
-                                                        ]
-                                                    }, void 0, true) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                children: "✅"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/products/new/page.tsx",
-                                                                lineNumber: 303,
-                                                                columnNumber: 23
-                                                            }, this),
-                                                            "เพิ่มสินค้า"
-                                                        ]
-                                                    }, void 0, true)
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 286,
-                                                    columnNumber: 17
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    type: "button",
-                                                    onClick: ()=>{
-                                                        setName('');
-                                                        setDescription('');
-                                                        setPrice('');
-                                                        setCategoryId(0);
-                                                        setErrors({});
-                                                    },
-                                                    className: "w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium",
-                                                    disabled: submitting,
-                                                    children: "🔄 ล้างข้อมูล"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 309,
-                                                    columnNumber: 17
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/app/products/new/page.tsx",
-                                            lineNumber: 285,
-                                            columnNumber: 15
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "mt-4 text-sm text-gray-600 bg-blue-50 rounded-lg p-4",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "flex items-center gap-2 mb-2",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            children: "💡"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 327,
-                                                            columnNumber: 19
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                            children: "คำแนะนำ:"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 328,
-                                                            columnNumber: 19
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 326,
-                                                    columnNumber: 17
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
-                                                    className: "space-y-1 ml-6 text-xs",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                                            children: "• ชื่อสินค้าควรชัดเจนและสื่อความหมาย"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 331,
-                                                            columnNumber: 19
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                                            children: "• รายละเอียดสินค้าควรครบถ้วนเพื่อให้ลูกค้าเข้าใจ"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 332,
-                                                            columnNumber: 19
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                                            children: "• ตรวจสอบราคาให้ถูกต้องก่อนบันทึก"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 333,
-                                                            columnNumber: 19
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                                            children: "• เลือกหมวดหมู่ที่เหมาะสมกับสินค้า"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/products/new/page.tsx",
-                                                            lineNumber: 334,
-                                                            columnNumber: 19
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/app/products/new/page.tsx",
-                                                    lineNumber: 330,
-                                                    columnNumber: 17
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/app/products/new/page.tsx",
-                                            lineNumber: 325,
-                                            columnNumber: 15
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
+                                    className: "flex justify-center",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        onClick: handleSubmit,
+                                        disabled: submitting,
+                                        className: "bg-gradient-to-r from-red-500 to-orange-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:opacity-90 transition-opacity w-full",
+                                        children: submitting ? 'กำลังส่งข้อมูล...' : 'เพิ่มสินค้า'
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/products/new/page.tsx",
+                                        lineNumber: 314,
+                                        columnNumber: 15
+                                    }, this)
+                                }, void 0, false, {
                                     fileName: "[project]/app/products/new/page.tsx",
-                                    lineNumber: 284,
+                                    lineNumber: 313,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/products/new/page.tsx",
-                            lineNumber: 156,
+                            lineNumber: 189,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/products/new/page.tsx",
-                    lineNumber: 148,
+                    lineNumber: 181,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/products/new/page.tsx",
-            lineNumber: 128,
+            lineNumber: 161,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/products/new/page.tsx",
-        lineNumber: 127,
+        lineNumber: 160,
         columnNumber: 5
     }, this);
 }

@@ -14,23 +14,23 @@ datasource db {
 }
 
 model Product {
-  id          Int       @id @default(autoincrement())
-  name        String
-  description String?
-  price       Float     @default(0.0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  orders      Order[]
-  categoryId  Int?
-  category    Category? @relation(fields: [categoryId], references: [id])
+  p_id         Int       @id @default(autoincrement()) @map("p_id")
+  name         String
+  description  String?
+  price        Float     @default(0.0)
+  createAt     DateTime  @default(now()) @map("createAt")
+  updateAt     DateTime  @updatedAt @map("updateAt")
+  categoryId   Int?      @map("categoryId")
+  category     Category? @relation(fields: [categoryId], references: [c_id])
+  orders      Order[]   // เพิ่มบรรทัดนี้เพื่อเชื่อม relation
 }
 
 model Order {
-  id        Int      @id @default(autoincrement())
+  o_id        Int      @id @default(autoincrement())
   productId Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [p_id])
 }
 
 model User {
@@ -42,7 +42,7 @@ model User {
 }
 
 model Category {
-  id       Int       @id @default(autoincrement())
+  c_id     Int       @id @default(autoincrement()) @map("c_id")
   name     String    @unique
   products Product[]
 }

@@ -1,6 +1,6 @@
 module.exports = {
 
-"[project]/.next-internal/server/app/api/categories/route/actions.js [app-rsc] (server actions loader, ecmascript)": ((__turbopack_context__) => {
+"[project]/.next-internal/server/app/api/products/route/actions.js [app-rsc] (server actions loader, ecmascript)": ((__turbopack_context__) => {
 
 var { m: module, e: exports } = __turbopack_context__;
 {
@@ -69,7 +69,7 @@ const mod = __turbopack_context__.x("@prisma/client", () => require("@prisma/cli
 
 module.exports = mod;
 }}),
-"[project]/app/api/categories/route.ts [app-route] (ecmascript)": ((__turbopack_context__) => {
+"[project]/app/api/products/route.ts [app-route] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s({
@@ -83,12 +83,17 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$ex
 const prisma = new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]();
 async function GET() {
     try {
-        const categories = await prisma.category.findMany();
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(categories);
+        // ดึง product พร้อมข้อมูล category ด้วย
+        const products = await prisma.product.findMany({
+            include: {
+                category: true
+            }
+        });
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(products);
     } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching products:', error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            message: 'ไม่สามารถดึงข้อมูลหมวดหมู่ได้'
+            message: 'ไม่สามารถดึงข้อมูลสินค้าได้'
         }, {
             status: 500
         });
@@ -97,26 +102,36 @@ async function GET() {
 async function POST(req) {
     try {
         const body = await req.json();
-        const { name } = body;
+        const { name, description, price, categoryId } = body;
         if (!name || name.trim() === '') {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                error: 'ชื่อหมวดหมู่ไม่สามารถว่างได้'
+                error: 'ชื่อสินค้าต้องไม่ว่าง'
             }, {
                 status: 400
             });
         }
-        const category = await prisma.category.create({
+        if (price == null || isNaN(price)) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: 'ราคาสินค้าต้องเป็นตัวเลข'
+            }, {
+                status: 400
+            });
+        }
+        const product = await prisma.product.create({
             data: {
-                name: name.trim()
+                name: name.trim(),
+                description: description?.trim() || '',
+                price: Number(price),
+                categoryId: categoryId || null
             }
         });
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(category, {
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(product, {
             status: 201
         });
     } catch (error) {
-        console.error('Error creating category:', error);
+        console.error('Error creating product:', error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: 'ไม่สามารถสร้างหมวดหมู่ได้'
+            error: 'ไม่สามารถสร้างสินค้าได้'
         }, {
             status: 500
         });
@@ -126,4 +141,4 @@ async function POST(req) {
 
 };
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__8d53a34c._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__6d1c6c2c._.js.map

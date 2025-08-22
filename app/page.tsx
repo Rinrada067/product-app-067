@@ -3,8 +3,8 @@ import Link from 'next/link'
 
 export default function HomePage() {
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-100 to-purple-200 p-6">
-            <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-orange-100 to-red-200 p-6">
+            <h1 className="text-4xl font-bold text-red-900 mb-8 text-center">
                 ยินดีต้อนรับเข้าสู่ระบบสินค้า
             </h1>
 
@@ -13,7 +13,7 @@ export default function HomePage() {
                     <li>
                         <Link
                             href="/products"
-                            className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-600 transition"
+                            className="bg-orange-500 text-white px-6 py-3 rounded-lg shadow hover:bg-orange-600 transition"
                         >
                             ดูรายการสินค้า
                         </Link>
@@ -21,7 +21,7 @@ export default function HomePage() {
                     <li>
                         <Link
                             href="/products/new"
-                            className="bg-green-500 text-white px-6 py-3 rounded-lg shadow hover:bg-green-600 transition"
+                            className="bg-red-500 text-white px-6 py-3 rounded-lg shadow hover:bg-red-600 transition"
                         >
                             เพิ่มสินค้าใหม่
                         </Link>

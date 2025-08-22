@@ -1,12 +1,19 @@
-// app/api/products/route.ts
-import { prisma } from '@/libs/prisma'
 import { NextResponse } from 'next/server'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export async function GET() {
-  const products = await prisma.product.findMany({
-    include: { category: true }, // ดึงข้อมูลหมวดหมู่ด้วย
-  })
-  return NextResponse.json(products)
+  try {
+    // ดึง product พร้อมข้อมูล category ด้วย
+    const products = await prisma.product.findMany({
+      include: { category: true }
+    })
+    return NextResponse.json(products)
+  } catch (error) {
+    console.error('Error fetching products:', error)
+    return NextResponse.json({ message: 'ไม่สามารถดึงข้อมูลสินค้าได้' }, { status: 500 })
+  }
 }
 
 export async function POST(req: Request) {
@@ -14,26 +21,25 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { name, description, price, categoryId } = body
 
-    // ตรวจสอบข้อมูล
-    if (!name || !description || !price || !categoryId) {
-      return NextResponse.json(
-        { error: 'กรุณากรอกข้อมูลให้ครบ' },
-        { status: 400 }
-      )
+    if (!name || name.trim() === '') {
+      return NextResponse.json({ error: 'ชื่อสินค้าต้องไม่ว่าง' }, { status: 400 })
+    }
+    if (price == null || isNaN(price)) {
+      return NextResponse.json({ error: 'ราคาสินค้าต้องเป็นตัวเลข' }, { status: 400 })
     }
 
-    const newProduct = await prisma.product.create({
+    const product = await prisma.product.create({
       data: {
-        name,
-        description,
-        price,
-        categoryId, // เชื่อมกับ category
-      },
+        name: name.trim(),
+        description: description?.trim() || '',
+        price: Number(price),
+        categoryId: categoryId || null
+      }
     })
 
-    return NextResponse.json(newProduct, { status: 201 })
-  } catch (err) {
-    console.error(err)
-    return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 })
+    return NextResponse.json(product, { status: 201 })
+  } catch (error) {
+    console.error('Error creating product:', error)
+    return NextResponse.json({ error: 'ไม่สามารถสร้างสินค้าได้' }, { status: 500 })
   }
 }

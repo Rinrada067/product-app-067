@@ -15,10 +15,10 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 ;
 function HomePage() {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-100 to-purple-200 p-6",
+        className: "min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-orange-100 to-red-200 p-6",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                className: "text-4xl font-bold text-gray-800 mb-8 text-center",
+                className: "text-4xl font-bold text-red-900 mb-8 text-center",
                 children: "ยินดีต้อนรับเข้าสู่ระบบสินค้า"
             }, void 0, false, {
                 fileName: "[project]/app/page.tsx",
@@ -32,7 +32,7 @@ function HomePage() {
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                 href: "/products",
-                                className: "bg-blue-500 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-600 transition",
+                                className: "bg-orange-500 text-white px-6 py-3 rounded-lg shadow hover:bg-orange-600 transition",
                                 children: "ดูรายการสินค้า"
                             }, void 0, false, {
                                 fileName: "[project]/app/page.tsx",
@@ -47,7 +47,7 @@ function HomePage() {
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                 href: "/products/new",
-                                className: "bg-green-500 text-white px-6 py-3 rounded-lg shadow hover:bg-green-600 transition",
+                                className: "bg-red-500 text-white px-6 py-3 rounded-lg shadow hover:bg-red-600 transition",
                                 children: "เพิ่มสินค้าใหม่"
                             }, void 0, false, {
                                 fileName: "[project]/app/page.tsx",

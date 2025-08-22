@@ -1,6 +1,6 @@
 module.exports = {
 
-"[project]/.next-internal/server/app/api/categories/route/actions.js [app-rsc] (server actions loader, ecmascript)": ((__turbopack_context__) => {
+"[project]/.next-internal/server/app/api/products/route/actions.js [app-rsc] (server actions loader, ecmascript)": ((__turbopack_context__) => {
 
 var { m: module, e: exports } = __turbopack_context__;
 {
@@ -69,54 +69,58 @@ const mod = __turbopack_context__.x("@prisma/client", () => require("@prisma/cli
 
 module.exports = mod;
 }}),
-"[project]/app/api/categories/route.ts [app-route] (ecmascript)": ((__turbopack_context__) => {
+"[project]/lib/prisma.ts [app-route] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s({
-    "GET": ()=>GET,
+    "prisma": ()=>prisma
+});
+var __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/@prisma/client [external] (@prisma/client, cjs)");
+;
+const globalForPrisma = globalThis;
+const prisma = globalForPrisma.prisma ?? new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]({
+    log: [
+        'query'
+    ]
+});
+if ("TURBOPACK compile-time truthy", 1) globalForPrisma.prisma;
+}),
+"[project]/app/api/products/route.ts [app-route] (ecmascript)": ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s({
     "POST": ()=>POST
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/@prisma/client [external] (@prisma/client, cjs)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/prisma.ts [app-route] (ecmascript)");
 ;
 ;
-const prisma = new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]();
-async function GET() {
-    try {
-        const categories = await prisma.category.findMany();
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(categories);
-    } catch (error) {
-        console.error('Error fetching categories:', error);
+async function POST(req) {
+    const body = await req.json();
+    const { name, description, price, categoryId } = body;
+    if (!name || !description || !price || !categoryId) {
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            message: 'ไม่สามารถดึงข้อมูลหมวดหมู่ได้'
+            error: 'ข้อมูลไม่ครบถ้วน'
         }, {
-            status: 500
+            status: 400
         });
     }
-}
-async function POST(req) {
     try {
-        const body = await req.json();
-        const { name } = body;
-        if (!name || name.trim() === '') {
-            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                error: 'ชื่อหมวดหมู่ไม่สามารถว่างได้'
-            }, {
-                status: 400
-            });
-        }
-        const category = await prisma.category.create({
+        const product = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].product.create({
             data: {
-                name: name.trim()
+                name,
+                description,
+                price,
+                categoryId
             }
         });
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(category, {
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(product, {
             status: 201
         });
     } catch (error) {
-        console.error('Error creating category:', error);
+        console.error('Error creating product:', error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: 'ไม่สามารถสร้างหมวดหมู่ได้'
+            error: 'ไม่สามารถเพิ่มสินค้าได้'
         }, {
             status: 500
         });
@@ -126,4 +130,4 @@ async function POST(req) {
 
 };
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__8d53a34c._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__58789a92._.js.map
