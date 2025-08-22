@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 74, "column": 0}, "map": {"version":3,"sources":["file:///D:/product-app049/app/api/categories/route.ts"],"sourcesContent":["import { NextResponse } from \"next/server\";\r\nimport { PrismaClient } from \"@prisma/client\";\r\n\r\nconst prisma = new PrismaClient();\r\n\r\nexport async function GET() {\r\n  try {\r\n    const categories = await prisma.category.findMany(); // ดึง Category ทั้งหมด\r\n    return NextResponse.json(categories);\r\n  } catch (error) {\r\n    console.error(error);\r\n    return NextResponse.json({ error: \"Cannot fetch categories\" }, { status: 500 });\r\n  }\r\n}\r\n"],"names":[],"mappings":";;;AAAA;AACA;;;AAEA,MAAM,SAAS,IAAI,6HAAA,CAAA,eAAY;AAExB,eAAe;IACpB,IAAI;QACF,MAAM,aAAa,MAAM,OAAO,QAAQ,CAAC,QAAQ,IAAI,uBAAuB;QAC5E,OAAO,gIAAA,CAAA,eAAY,CAAC,IAAI,CAAC;IAC3B,EAAE,OAAO,OAAO;QACd,QAAQ,KAAK,CAAC;QACd,OAAO,gIAAA,CAAA,eAAY,CAAC,IAAI,CAAC;YAAE,OAAO;QAA0B,GAAG;YAAE,QAAQ;QAAI;IAC/E;AACF","debugId":null}}]
+}
