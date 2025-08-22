@@ -1,8 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
-    {"offset": {"line": 74, "column": 0}, "map": {"version":3,"sources":["file:///D:/product-app049/libs/prisma.ts"],"sourcesContent":["// libs/prisma.ts\r\nimport { PrismaClient } from '@prisma/client'\r\n\r\nconst globalForPrisma = globalThis as unknown as {\r\n    prisma: PrismaClient | undefined\r\n}\r\n\r\nexport const prisma =\r\n    globalForPrisma.prisma ??\r\n    new PrismaClient({\r\n        log: ['query'],\r\n    })\r\n\r\nif (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma\r\n"],"names":[],"mappings":"AAAA,iBAAiB;;;;AACjB;;AAEA,MAAM,kBAAkB;AAIjB,MAAM,SACT,gBAAgB,MAAM,IACtB,IAAI,6HAAA,CAAA,eAAY,CAAC;IACb,KAAK;QAAC;KAAQ;AAClB;AAEJ,wCAA2C,gBAAgB,MAAM,GAAG","debugId":null}},
-    {"offset": {"line": 91, "column": 0}, "map": {"version":3,"sources":["file:///D:/product-app049/app/api/categories/route.ts"],"sourcesContent":["import { NextResponse } from 'next/server'\r\nimport { prisma } from '@/libs/prisma'\r\n\r\nexport async function GET() {\r\n  const categories = await prisma.category.findMany()\r\n  return NextResponse.json(categories)\r\n}\r\n"],"names":[],"mappings":";;;AAAA;AACA;;;AAEO,eAAe;IACpB,MAAM,aAAa,MAAM,gHAAA,CAAA,SAAM,CAAC,QAAQ,CAAC,QAAQ;IACjD,OAAO,gIAAA,CAAA,eAAY,CAAC,IAAI,CAAC;AAC3B","debugId":null}}]
-}

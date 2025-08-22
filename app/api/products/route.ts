@@ -1,44 +1,39 @@
-import { prisma } from '@/lib/prisma'
+// app/api/products/route.ts
+import { prisma } from '@/libs/prisma'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
   const products = await prisma.product.findMany({
-    include: {
-      category: true,
-    },
+    include: { category: true }, // ดึงข้อมูลหมวดหมู่ด้วย
   })
   return NextResponse.json(products)
 }
 
 export async function POST(req: Request) {
-  const body = await req.json()
+  try {
+    const body = await req.json()
+    const { name, description, price, categoryId } = body
 
-  if (
-    !body.name ||
-    !body.description ||
-    typeof body.price !== 'number' ||
-    typeof body.categoryId !== 'number'
-  ) {
-    return NextResponse.json({ error: 'ข้อมูลไม่ครบหรือผิดประเภท' }, { status: 400 })
+    // ตรวจสอบข้อมูล
+    if (!name || !description || !price || !categoryId) {
+      return NextResponse.json(
+        { error: 'กรุณากรอกข้อมูลให้ครบ' },
+        { status: 400 }
+      )
+    }
+
+    const newProduct = await prisma.product.create({
+      data: {
+        name,
+        description,
+        price,
+        categoryId, // เชื่อมกับ category
+      },
+    })
+
+    return NextResponse.json(newProduct, { status: 201 })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 })
   }
-
-  // แก้ไขตรงนี้ ใช้ id แทน c_id
-  const categoryExists = await prisma.category.findUnique({
-  where: { c_id: body.categoryId },
-})
-
-  if (!categoryExists) {
-    return NextResponse.json({ error: 'ไม่พบหมวดหมู่ที่เลือก' }, { status: 400 })
-  }
-
-  const newProduct = await prisma.product.create({
-    data: {
-      name: body.name,
-      description: body.description,
-      price: body.price,
-      categoryId: body.categoryId,
-    },
-  })
-
-  return NextResponse.json(newProduct)
 }

@@ -1,11 +1,11 @@
 // app/api/products/[id]/route.ts
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/libs/prisma'
 import { NextResponse } from 'next/server'
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
     const body = await req.json()
     const id = parseInt(params.id)
     const updated = await prisma.product.update({
-        where: { p_id: id  },
+        where: { id },
         data: {
             name: body.name,
             description: body.description,
@@ -18,7 +18,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 export async function DELETE(_: Request, { params }: { params: { id: string } }) {
     const id = parseInt(params.id)
     const deleted = await prisma.product.delete({
-        where: { p_id: id  },
+        where: { id },
     })
     return NextResponse.json({ message: 'Deleted', deleted })
 }
