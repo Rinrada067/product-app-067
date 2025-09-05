@@ -29,6 +29,8 @@ export default function NewProductPage() {
   const fetchCategories = async () => {
     try {
       setLoading(true)
+
+      
       const res = await fetch('/api/categories')
       if (!res.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้')
       const data: Category[] = await res.json()

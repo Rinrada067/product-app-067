@@ -1,4 +1,4 @@
-'use client'
+'use client' //ไฟล์นี้ทำงานอยู่ฝั่ง client
 import { useEffect, useState } from 'react'
 
 // ประเภทข้อมูล

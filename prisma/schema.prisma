@@ -4,6 +4,7 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,35 +15,40 @@ datasource db {
 }
 
 model Product {
-  p_id         Int       @id @default(autoincrement()) @map("p_id")
-  name         String
-  description  String?
-  price        Float     @default(0.0)
-  createAt     DateTime  @default(now()) @map("createAt")
-  updateAt     DateTime  @updatedAt @map("updateAt")
-  categoryId   Int?      @map("categoryId")
-  category     Category? @relation(fields: [categoryId], references: [c_id])
-  orders      Order[]   // เพิ่มบรรทัดนี้เพื่อเชื่อม relation
+  p_id        Int       @id @default(autoincrement()) @map("p_id")
+  name        String    @unique                           // ✅ ใช้ upsert ด้วย name ได้
+  description String?
+  price       Decimal   @db.Decimal(10,2) @default(0.00)  // ✅ ราคาแบบ Decimal
+  createAt    DateTime  @default(now()) @map("createAt")
+  updateAt    DateTime  @updatedAt @map("updateAt")
+
+  categoryId  Int?      @map("categoryId")
+  category    Category? @relation(fields: [categoryId], references: [c_id], onDelete: SetNull)
+
+  orders      Order[]
+
+  @@index([categoryId])                                    // ✅ ค้นหาตามหมวดเร็วขึ้น
 }
 
 model Order {
-  o_id        Int      @id @default(autoincrement())
-  productId Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  product   Product  @relation(fields: [productId], references: [p_id])
-}
-
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+  o_id       Int      @id @default(autoincrement())
+  productId  Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  product    Product  @relation(fields: [productId], references: [p_id])
 }
 
 model Category {
   c_id     Int       @id @default(autoincrement()) @map("c_id")
   name     String    @unique
   products Product[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -13,13 +13,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   adminer:
-    container_name: adminer
+    container_name: adminer-product
     image: adminer
     restart: always
     ports:
       - '8080:8080'
-    depends_on:
-      - db
+    
  
 volumes:
   postgres_data:
